@@ -12,12 +12,32 @@ class KamarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kamar = Kamar::with('tipeKamar')->paginate(10);
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $query = Kamar::with('tipeKamar')
+            ->when($search, function ($q, $search) {
+                return $q->where(function ($subq) use ($search) {
+                    $subq->where('nomer_kamar', 'like', "%{$search}%")
+                        ->orWhereHas('tipeKamar', function ($tipeQuery) use ($search) {
+                            $tipeQuery->where('nama_tipe', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($status, function ($q, $status) {
+                return $q->where('status', $status);
+            });
+
+        $kamar = $query->latest()->paginate(10)->appends($request->query());
+
+        if ($request->ajax()) {
+            return view('admin.kamar._kamar_table', compact('kamar'))->render();
+        }
+
         return view('admin.kamar.index', compact('kamar'));
     }
-
     /**
      * Show the form for creating a new resource.
      */
