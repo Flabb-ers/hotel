@@ -22,6 +22,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Tabel Layanan
+        Schema::create('tb_layanan', function (Blueprint $table) {
+            $table->id('id_layanan');
+            $table->string('nama_layanan');
+            $table->decimal('harga', 10, 2);
+            $table->timestamps();
+        });
+
         // Tabel Tipe Kamar
         Schema::create('tb_tipe_kamar', function (Blueprint $table) {
             $table->id('id_tipe');
@@ -32,13 +40,6 @@ return new class extends Migration
             $table->foreign('id_layanan')->references('id_layanan')->on('tb_layanan');
         });
 
-        // Tabel Layanan
-        Schema::create('tb_layanan', function (Blueprint $table) {
-            $table->id('id_layanan');
-            $table->string('nama_layanan');
-            $table->decimal('harga', 10, 2);
-            $table->timestamps();
-        });
 
         // Tabel Kamar
         Schema::create('tb_kamar', function (Blueprint $table) {
